@@ -1,12 +1,17 @@
-var express = require("express");
-var bodyParser = require("body-parser");
-var mongoose = require("mongoose");
-var session = require('express-session');
-
+const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const session = require('express-session');
+const movieRouter = require("./movie"); 
 const app = express();
 
+app.use("/movies", movieRouter); 
+
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static('public')); // Serving static files once is sufficient
+
+app.use(express.urlencoded({extended:false}));
+app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded(
     {
         extended: true
@@ -20,6 +25,7 @@ app.use(session(
 }));
 
 mongoose.connect('mongodb://localhost:27017/Database');
+
 let db = mongoose.connection;
 db.on('error', ()=> console.log("Database connection error."));
 db.once('open', ()=> console.log("Connected to Database."));
@@ -112,7 +118,11 @@ app.get('/', (req, res) =>
         {
             "Allow-access-Allow-Origin": "*"
         })
-    return res.redirect('movie_menu.html')
-}).listen(3000);
+    return res.redirect('movie_input.html')
+});
 
-console.log("Listening on port 3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => 
+{
+    console.log(`App is listening on port ${PORT}`);
+});

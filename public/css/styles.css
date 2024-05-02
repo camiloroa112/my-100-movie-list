@@ -1,0 +1,39 @@
+.ratings
+{
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.ratings span
+{
+    cursor: pointer;
+    transition: color .2s, transform .2s;
+    font-size: 20px;
+}
+
+.ratings span:hover
+{
+    color: yellow;
+    transform: scale(1.1);
+}
+
+.ratings span:hover ~ span
+{
+    color: yellow;
+}
+
+.ratings-wrapper
+{
+    display: inline-block;
+    flex-direction: row-reverse;
+}
+
+.ratings span[data-clicked]
+{
+    color: orange;
+}
+
+.ratings span[data-clicked] ~ span
+{
+    color: orange;
+}
