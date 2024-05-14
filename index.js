@@ -5,10 +5,10 @@ const session = require('express-session');
 const movieRouter = require("./movie"); 
 const app = express();
 
-app.use("/movies", movieRouter); 
+app.use("/movie", movieRouter);
 
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serving static files once is sufficient
+app.use(express.static('public')); 
 
 app.use(express.urlencoded({extended:false}));
 app.set('view engine', 'ejs');
@@ -111,6 +111,53 @@ app.get('/logout', (req, res) =>
         res.redirect('movie_menu.html'); 
     });
 });
+
+
+const multer = require("multer");
+const path = require("path");
+
+// Set up multer for handling file uploads
+const storage = multer.diskStorage(
+    {
+        destination: function (req, file, cb) 
+        {
+            cb(null, 'uploads/') 
+        },
+        filename: function (req, file, cb) 
+        {
+            cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+        }
+    });
+
+const upload = multer({ storage: storage });
+
+app.post("/movie", upload.single('img'), async (req, res) => {
+    try 
+    {
+        // Create a new movie object based on the form data
+        const movie = new Movie
+        ({
+            name: req.body.name,
+            date: req.body.date,
+            user: req.body.user,
+            rating: req.body.rating,
+            image: req.file ? req.file.path : null
+        });
+        
+        // Saving the movie to the database
+        const savedMovie = await movie.save();
+        console.log("Saved movie:", savedMovie);
+        
+        // Redirect back to the form page or send a success response
+        res.redirect('/movie_input.html');
+    } 
+    catch (error) 
+    {
+        console.error("Error saving movie:", error);
+        res.status(500).send("An error occurred while saving the movie.");
+    }
+});
+
 
 app.get('/', (req, res) => 
 {

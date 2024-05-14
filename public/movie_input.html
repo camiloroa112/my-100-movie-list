@@ -21,8 +21,7 @@
             class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
             <a href="movie_menu.html"
                 class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none img-fluid gap-3">
-                <img src="/img/film-solid.svg" alt="" class="img-fluid gap-3 mr-2" style="width: 15px;">T&C
-                Films
+                <img src="/img/film-solid.svg" alt="" class="img-fluid gap-3 mr-2" style="width: 15px;">C & Co. Films
             </a>
             <div class="col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 <img src="/img/clapperboard-solid.svg" alt="" class="img-fluid gap-2 mr-2 d-inline my-auto"
@@ -77,7 +76,7 @@
             <h1 class="text-center mt-3" style="font-size: 30px;">Uploading Movie</h1>
             <hr />
             <div>
-                <form enctype="multipart/form-data" id="movie-form">
+                <form action="/movie" enctype="multipart/form-data" id="movie-form">
                     <div class="form-group">
                         <label>Name</label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="Movie name" required>
@@ -135,12 +134,9 @@
     </script>
     <script>
         let form = document.getElementById('movie-form');
-        // Add event listener for form submission
         form.addEventListener('submit', function(event) 
         {
-            event.preventDefault(); // Prevent default form submission
-
-            // Call the addEntries function
+            event.preventDefault(); 
             addEntries(event);
         });
     </script>
@@ -149,7 +145,6 @@
         crossorigin="anonymous"></script>
     <script src="script.js"></script>
     <script>
-        // Function to generate star icons based on rating
         function getStarRating(rating) 
         {
             let stars = '';
@@ -157,12 +152,12 @@
             {
                 if (i <= rating) 
                 {
-                    stars += '<span style="color: #fdd835;">&#9733;</span>'; // Filled star
+                    stars += '<span style="color: #fdd835;">&#9733;</span>';
                 } 
                 
                 else 
                 {
-                    stars += '<span style="color: #bdbdbd;">&#9733;</span>'; // Unfilled star
+                    stars += '<span style="color: #bdbdbd;">&#9733;</span>';
                 }
             }
             return stars;
@@ -171,8 +166,6 @@
         // Function to add entries to the table
         function addEntries(event) 
         {
-            event.preventDefault();
-    
             // Get the selected rating
             var selectedRating = getRating();
     
@@ -201,7 +194,7 @@
             let cell3 = row.insertCell(3);
             let cell4 = row.insertCell(4);
             let cell5 = row.insertCell(5);
-            let cell6 = row.insertCell(6); // New cell for delete option
+            let cell6 = row.insertCell(6);
     
             // Introducing value in new cell being what has been placed on input with a button
             cell.innerHTML = lastRow;
@@ -227,6 +220,32 @@
             // Display image in the table if available
             cell5.innerHTML = imgName ? `<img src="${URL.createObjectURL(imgFile)}" alt="${imgName}" style="max-width: 100px;">` : "";
             cell5.classList.add('align-middle');
+
+            // Sending the data to the server using fetch
+            fetch('/movie', 
+            {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => 
+            {
+                if (response.ok) 
+                {
+                    console.log('Movie saved successfully');
+                    
+                } 
+                else 
+                {
+                    // Error handling here
+                    console.error('Failed to save movie');
+                }
+            })
+
+            .catch(error => 
+            {
+                console.error('Error saving movie:', error);
+                // Handle errors here
+            });
     
             // Element for deleting a specific row
             row.querySelector('.btn-delete').addEventListener('click', deleteRow);
@@ -258,7 +277,7 @@
 </body>
 <footer class="container d-flex flex-wrap justify-content-between align-items-center mt-auto border-top">
     <div class="col-sm-4 col-md-4 col-lg-4 col-xl-4 d-flex pt-4">
-        <p class="name">© T&C Films</p>
+        <p class="name">© C & Co. Films</p>
     </div>
 </footer>
 </html>

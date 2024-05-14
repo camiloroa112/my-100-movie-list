@@ -1,28 +1,17 @@
-const express = require("express");
-const Movie = require("./movieModel"); // Import the Movie model
+const mongoose = require("mongoose");
 
-const movieRouter = express.Router();
-
-movieRouter.post("/add", (req, res) => {
-    // Your movie registration route code...
-
-    // Save the movie using the Movie model
-    const movieData = {
-        name: req.body.name,
-        date: req.body.date,
-        user: req.body.user,
-        rating: req.body.rating,
-        image: req.body.image
-    };
-
-    Movie.create(movieData, (err, movie) => {
-        if (err) {
-            console.error("Error inserting movie:", err);
-            return res.status(500).send("Error inserting movie.");
-        }
-        console.log("Movie inserted successfully!");
-        return res.redirect("movie_input.html");
+// Define the schema for the movie collection
+const movieSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        date: { type: Date, required: true },
+        user: { type: String, required: true },
+        rating: { type: Number, required: true },
+        image: { type: String } // Store URL or reference to the image
+        // Add additional fields as needed
     });
-});
 
-module.exports = movieRouter;
+// Create the Movie model
+const Movie = mongoose.model("Movie", movieSchema);
+
+module.exports = Movie;
